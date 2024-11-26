@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import argparse
 import math
 import json
 import sys
@@ -44,26 +45,27 @@ def print_format(files, args):
 
     output_list.sort(key=lambda x:x[3])
 
-    if('-t' in args):
+    if(args.t):
         output_list.sort(key=lambda x: x[2])
 
-    if('-r' in args):
+    if(args.r):
         output_list.reverse()
 
-    if('-h' in args):
+    if(args.h):
         for val in output_list:
             val[1] = convert_size(val[1])
 
     for val in output_list:
         val[2] = datetime.fromtimestamp(val[2]).strftime('%b %d %H:%M')
 
-    if('-l' not in args):
+    if(args.l):
+        print_l_format(output_list)
+    else:
         only_names = []
         for row in output_list:
             only_names.append(row[3])
         print(*only_names)
-    else:
-        print_l_format(output_list)
+
 
 
 def ls(all_required):
@@ -81,46 +83,53 @@ def ls(all_required):
 def get_filtered_files(all_files, arg):
     filtered_files = []
     for a_file in all_files:
-        if(arg == '--filter=dir'):
+        if(arg == 'dir'):
             if('contents' in a_file):
                 filtered_files.append(a_file)
-        if (arg == '--filter=file'):
+        if (arg == 'file'):
             if ('contents' not in a_file):
                 filtered_files.append(a_file)
     return filtered_files
 
 
-def get_required_files():
-    if ('-A' in sys.argv):
+def get_required_files(args):
+    if (args.A):
         all_files = ls(True)
     else:
         all_files = ls(False)
 
-    for arg in sys.argv:
-        if (arg.startswith('--filter=')):
-            if (('--filter=dir' in arg) or ('--filter=file' in arg)):
-                all_files = get_filtered_files(all_files, arg)
-            else:
-                provided_name = arg.replace('--filter=', '')
-                print(
-                    f"error: '{provided_name}' is not a valid filter criteria. Available filters are 'dir' and 'file'")
-                sys.exit()
+    if ((args.filter=='dir') or (args.filter=='file')):
+        all_files = get_filtered_files(all_files, args.filter)
+    else:
+        if(args.filter is not None):
+            print(f"error: '{args.filter}' is not a valid filter criteria. Available filters are 'dir' and 'file'")
+            sys.exit()
 
     return all_files
-    '''
-    for arg in sys.argv:
-        if (arg[0] != '-'):
-            for '''
 
+def set_and_get_argparse_values():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('-A', action='store_true', help='show hidden files starting with .')
+    parser.add_argument('-t', action='store_true', help='sort by timestamp modified')
+    parser.add_argument('-r', action='store_true', help='reverse sort the result')
+    parser.add_argument('-h', action='store_true', help='show the file/folder sizes in human readable format')
+    parser.add_argument('--help', action="help")
+    parser.add_argument('-l', action='store_true', help='show details')
+    parser.add_argument('--filter', help='filter directory or files')
+
+    args = parser.parse_args()
+    return args
 
 
 def main():
     global json_as_dict
     json_as_dict = read_json_as_dict()
 
-    required_files = get_required_files()
+    args = set_and_get_argparse_values()
 
-    print_format(required_files, sys.argv)
+    required_files = get_required_files(args)
+
+    print_format(required_files, args)
 
 
 
