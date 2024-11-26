@@ -92,7 +92,7 @@ def get_filtered_files(all_files, arg):
     return filtered_files
 
 
-def get_required_files(args):
+def get_required_files(args, file_filter):
     if (args.A):
         all_files = ls(True)
     else:
@@ -104,6 +104,9 @@ def get_required_files(args):
         if(args.filter is not None):
             print(f"error: '{args.filter}' is not a valid filter criteria. Available filters are 'dir' and 'file'")
             sys.exit()
+
+    # TODO
+    # if(len(file_filter) > 0):
 
     return all_files
 
@@ -117,17 +120,17 @@ def set_and_get_argparse_values():
     parser.add_argument('-l', action='store_true', help='show details')
     parser.add_argument('--filter', help='filter directory or files')
 
-    args = parser.parse_args()
-    return args
+    args, file_filter = parser.parse_known_args()
+    return args, file_filter
 
 
 def main():
     global json_as_dict
     json_as_dict = read_json_as_dict()
 
-    args = set_and_get_argparse_values()
+    args, file_filter = set_and_get_argparse_values()
 
-    required_files = get_required_files(args)
+    required_files = get_required_files(args, file_filter)
 
     print_format(required_files, args)
 
