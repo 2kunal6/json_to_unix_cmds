@@ -68,9 +68,17 @@ def print_format(files, args):
 
 
 
-def ls(all_required):
+def ls(all_required, file_filter):
     filename_list = []
-    for filename in json_as_dict['contents']:
+    all_files = []
+    if(len(file_filter)>0):
+        for val in json_as_dict['contents']:
+            if(val['name'] == file_filter[0]):
+                all_files = val['contents']
+    else:
+        all_files = json_as_dict['contents']
+
+    for filename in all_files:
         if(all_required == True):
             filename_list.append(filename)
         else:
@@ -93,10 +101,10 @@ def get_filtered_files(all_files, arg):
 
 
 def get_required_files(args, file_filter):
+    all_required = False
     if (args.A):
-        all_files = ls(True)
-    else:
-        all_files = ls(False)
+        all_required = True
+    all_files = ls(all_required, file_filter)
 
     if ((args.filter=='dir') or (args.filter=='file')):
         all_files = get_filtered_files(all_files, args.filter)
@@ -104,9 +112,6 @@ def get_required_files(args, file_filter):
         if(args.filter is not None):
             print(f"error: '{args.filter}' is not a valid filter criteria. Available filters are 'dir' and 'file'")
             sys.exit()
-
-    # TODO
-    # if(len(file_filter) > 0):
 
     return all_files
 
