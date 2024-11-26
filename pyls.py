@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import math
 import json
 import sys
@@ -22,11 +24,18 @@ def convert_size(size_bytes):
 
 
 def print_l_format(matrix):
-    s = [[str(e) for e in row] for row in matrix]
-    lens = [max(map(len, col)) for col in zip(*s)]
-    fmt = '\t'.join('{{:{}}}'.format(x) for x in lens)
-    table = [fmt.format(*row) for row in s]
-    print('\n'.join(table))
+    col_widths = [max(len(str(item)) for item in col) for col in zip(*matrix)]
+
+    # Print each row with formatted columns
+    for row in matrix:
+        formatted_row = []
+        for i, cell in enumerate(row):
+            if i == 0 or i == len(row) - 1:  # Left-most and right-most columns
+                formatted_row.append(f"{str(cell):<{col_widths[i]}}")  # Left-align
+            else:  # Middle columns
+                formatted_row.append(f"{str(cell):>{col_widths[i]}}")  # Right-align
+        print("  ".join(formatted_row))
+
 
 def print_format(files, args):
     output_list = []
@@ -44,6 +53,9 @@ def print_format(files, args):
     if('-h' in args):
         for val in output_list:
             val[1] = convert_size(val[1])
+
+    for val in output_list:
+        val[2] = datetime.fromtimestamp(val[2]).strftime('%b %d %H:%M')
 
     if('-l' not in args):
         only_names = []
@@ -75,7 +87,7 @@ def get_filtered_files(all_files, arg):
         if (arg == '--filter=file'):
             if ('contents' not in a_file):
                 filtered_files.append(a_file)
-        return filtered_files
+    return filtered_files
 
 
 def get_required_files():
@@ -89,10 +101,10 @@ def get_required_files():
             if (('--filter=dir' in arg) or ('--filter=file' in arg)):
                 all_files = get_filtered_files(all_files, arg)
             else:
-                provided_name = arg.replace('--filter=')
+                provided_name = arg.replace('--filter=', '')
                 print(
                     f"error: '{provided_name}' is not a valid filter criteria. Available filters are 'dir' and 'file'")
-                return
+                sys.exit()
 
     return all_files
     '''
