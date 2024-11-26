@@ -21,12 +21,20 @@ def convert_size(size_bytes):
    return "%s%s" % (s, size_name[i])
 
 
+def print_l_format(matrix):
+    s = [[str(e) for e in row] for row in matrix]
+    lens = [max(map(len, col)) for col in zip(*s)]
+    fmt = '\t'.join('{{:{}}}'.format(x) for x in lens)
+    table = [fmt.format(*row) for row in s]
+    print('\n'.join(table))
+
 def print_format(files, args):
     output_list = []
     for file in files:
         output_list.append([file['permissions'], file['size'], file['time_modified'], file['name']])
 
     output_list.sort(key=lambda x:x[3])
+
     if('-t' in args):
         output_list.sort(key=lambda x: x[2])
 
@@ -37,7 +45,13 @@ def print_format(files, args):
         for val in output_list:
             val[1] = convert_size(val[1])
 
-    print(output_list)
+    if('-l' not in args):
+        only_names = []
+        for row in output_list:
+            only_names.append(row[3])
+        print(*only_names)
+    else:
+        print_l_format(output_list)
 
 
 def ls(all_required):
