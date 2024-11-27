@@ -4,9 +4,9 @@
     - Sometimes this might give this error: externally-managed-environment
     - To circumvent this we can create a virtual env and run it. Here are the steps to do that:
       - Install venv
-      - python3 -m venv <location-to-your-venv>
-      - source .<location-to-your-venv>/bin/activate
-      - From the root of this project run: python3 -m pip install .
+      - python3 -m venv [location-to-your-venv]
+      - source [location-to-your-venv]/bin/activate
+      - From the root of this project run: python3 -m pip install -e .
 3. This should install pyls in our venv and to run it simply run: pyls [optional arguments]
 
 
