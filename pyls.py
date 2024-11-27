@@ -72,9 +72,25 @@ def ls(all_required, file_filter):
     filename_list = []
     all_files = []
     if(len(file_filter)>0):
-        for val in json_as_dict['contents']:
-            if(val['name'] == file_filter[0]):
-                all_files = val['contents']
+        file_filter = file_filter[0]
+        if('/' in file_filter):
+            full_path = file_filter.split('/')
+            curr = json_as_dict
+            for i in range(len(full_path)):
+                is_found = False
+                for val in curr['contents']:
+                    if(full_path[i] == val['name']):
+                        curr=val
+                        is_found = True
+                        if(i==len(full_path)-1):
+                            return [val]
+                if(is_found == False):
+                    print(f"error: cannot access '{file_filter}': No such file or directory")
+                    sys.exit()
+        else:
+            for val in json_as_dict['contents']:
+                if(val['name'] == file_filter[0]):
+                    all_files = val['contents']
     else:
         all_files = json_as_dict['contents']
 
