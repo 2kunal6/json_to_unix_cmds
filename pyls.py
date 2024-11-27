@@ -137,7 +137,7 @@ def set_and_get_argparse_values():
     parser.add_argument('-t', action='store_true', help='sort by timestamp modified')
     parser.add_argument('-r', action='store_true', help='reverse sort the result')
     parser.add_argument('-h', action='store_true', help='show the file/folder sizes in human readable format')
-    parser.add_argument('--help', action="help")
+    parser.add_argument('--help', action="help", help='show all the arguments and their utilities')
     parser.add_argument('-l', action='store_true', help='show details')
     parser.add_argument('--filter', help='filter directory or files')
 

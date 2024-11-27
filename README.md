@@ -19,8 +19,6 @@ This project simulates the ls unix command.  Here are a few examples on how to r
 
 
 ## TODO
-- Implement subtask 7: handle paths
-- Implement subtask 9: --help with argparse and show error for illegal arguments
 - Check and implement if the arguments should be case-insensitive
 - Create 2 classes: FileFilterer and OutputFormatter and put the filter and print logic inside those files.
 - Include pytest
